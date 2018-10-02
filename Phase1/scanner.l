@@ -1,19 +1,14 @@
 %{
 #include "parser.tab.h"
-int lineno = 0;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 %}
 
 %%
-[a-zA-Z][a-zA-Z]*	{return ID;}
-"+"					{return '+';}
-"-"					{return '-';}
-"*"					{return '*';}
-"/"					{return '/';}
-"("					{return '(';}
-")"					{return ')';}
-[ \t]				{ }
-\n		     		{++lineno;}
-.					{ printf("Line No %d: Unrecognized Character\n", lineno); }
-
-%%
-
+"class" { return CLASS; }
+"int" { return DTYPE; }
+"boolean" { return DTYPE; }
+[a-zA-Z] { return ALPHA; }
+[0-9a-zA-Z] { return ALPHA_NUM; }
