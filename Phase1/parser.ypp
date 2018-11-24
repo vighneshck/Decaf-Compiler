@@ -1,0 +1,200 @@
+%{
+#include <bits/stdc++.h>
+extern "C" int yylex();
+extern FILE *yyin;
+extern int line_no;
+extern int errors;
+void yyerror(const char *s);
+int errors=0;
+%}
+
+/* Tokens */
+%start program
+
+%token CLASS
+%token DTYPE VOID BOOL
+%token RETURN
+%token FOR
+%token IF ELSE
+%token CONTINUE BREAK
+%token CALLOUT
+%token ID
+%token EQ ADDEQ SUBEQ
+%token ADD SUB DIV MUL MOD NOT
+%token LT GT LE GE EQUAL NOT_EQUAL
+%token COND_AND COND_OR
+%token OB CB OSB CSB OP CP 
+%token COMMA SC
+%token INTEGER INT_LIT CHAR STRING
+
+%left ADD SUB
+%left MUL DIV MOD
+%left LT GT LE GE
+%left EQUAL NOT_EQUAL
+%left COND_AND COND_OR
+%nonassoc NOT
+
+%%
+program: CLASS ID OB field_declarations method_declarations CB
+		;
+
+field_declaration: DTYPE variables
+				| SC
+				;
+
+field_declarations: %empty
+					| field_declarations field_declaration
+					;
+
+variables: variable
+		| variables COMMA variable
+		;
+
+variable: ID 
+	| ID OSB INT_LIT CSB
+	;
+
+method_declaration: DTYPE ID OP parameters CP block
+					| VOID ID OP parameters CP block
+					;
+
+method_declarations: %empty
+					| method_declarations method_declaration
+					;
+
+parameters: %empty
+			| parameter_comma_separated
+			;
+
+parameter_comma_separated: parameter
+						| parameter_comma_separated COMMA parameter
+						;
+
+parameter: DTYPE ID
+		;
+
+block: OB variable_declarations statements CB
+		;
+
+variable_declarations: %empty
+						| variable_declarations variable_declaration
+						;
+
+identifiers_comma_separated: ID
+							| identifiers_comma_separated COMMA ID
+							;
+
+variable_declaration: DTYPE identifiers_comma_separated SC
+					;
+
+statements: %empty;
+			| statements statement
+			;
+
+statement: location assign_op expr SC
+		| method_call SC
+		| IF OP expr CP block 
+		| IF OP expr CP block ELSE block
+		| FOR ID EQ expr COMMA expr block
+		| RETURN expr SC
+		| RETURN SC
+		| BREAK SC
+		| CONTINUE SC
+		| block
+		;
+
+location: ID
+		| ID OSB expr CSB
+		;
+
+assign_op: EQ
+		| ADDEQ
+		| SUBEQ
+		;
+
+expr: location
+	| method_call
+	| literal
+	| expr bin_op expr
+	| SUB expr
+	| NOT expr
+	| OP expr CP
+	;
+
+method_call: ID OP expressions CP
+			| CALLOUT OP STRING CP
+			| CALLOUT OP STRING COMMA callout_args CP
+			;
+
+expressions: %empty
+			| expr
+			| expressions COMMA expr
+			;
+
+callout_args: callout_arg
+			| callout_args COMMA callout_arg
+			;
+
+callout_arg: expr
+			| STRING
+			; 
+
+arith_op: ADD
+		| SUB
+		| MUL
+		| DIV
+		| MOD
+		;
+
+rel_op: LT
+		| GT
+		| LE
+		| GE
+		;
+
+literal: INT_LIT
+		| CHAR
+		| STRING
+		;
+
+bin_op: arith_op
+		| rel_op
+		| eq_op
+		| cond_op
+		;
+
+cond_op: COND_AND
+		| COND_OR
+		;
+
+eq_op: EQUAL
+	| NOT_EQUAL
+	;
+
+%%
+
+int main(int argc, char **argv)
+{
+	if(argc == 1) {
+		printf("Please provide an input file\n");
+		exit(-1);
+	}
+
+	FILE *input = fopen(argv[1], "r");
+
+	if (input == NULL){
+		printf("Unable to open the given file!\n");
+		exit(-1);
+	}
+	yyin = input;
+	do {
+		yyparse();
+	} while (!feof(yyin));
+	printf("PARSED\n");
+}
+
+void yyerror(const char *s){
+	errors++;
+	printf("Error %s found at %d\n",s,line_no);
+  exit(-1);
+}
