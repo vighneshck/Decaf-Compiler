@@ -1,0 +1,275 @@
+%{
+#include <bits/stdc++.h>
+#include "programdef.h"
+extern "C" int yylex();
+extern FILE *yyin;
+extern int line_no;
+extern int errors;
+extern union Node yylval;
+void yyerror(const char *s);
+int errors=0;
+class Prog* start = NULL;
+%}
+
+/* Tokens */
+
+/* -------------	Terminal Types		------------- */
+
+%start program
+
+%token CLASS
+%token <lit> TYPE 
+%token VOID
+%token <lit> BOOLEAN
+%token RETURN
+%token FOR
+%token IF ELSE
+%token CONTINUE BREAK
+%token CALLOUT
+%token <lit> ID
+%token <lit> EQ ADDEQ SUBEQ
+%token <lit> ADD SUB DIV MUL MOD NOT
+%token <lit> LT GT LE GE EQUAL NOT_EQUAL
+%token <lit> COND_AND COND_OR
+%token OP CP OB CB OSB CSB
+%token COMMA SC
+%token <num> INT_LIT
+%token <lit> CHAR STRING
+
+%left ADD SUB
+%left MUL DIV MOD
+%left LT GT LE GE
+%left EQUAL NOT_EQUAL
+%left COND_AND COND_OR
+%nonassoc NOT
+
+/* -------------	Non-Terminal Types		------------- */
+
+%type <prog> program;
+%type <decls> field_declarations;
+%type <decl> field_declaration;
+%type <fields> fields;
+%type <field> field;
+%type <methods> method_declarations;
+%type <method> method_declaration;
+%type <params> parameters;
+%type <param> parameter;
+%type <block> block;
+%type <varList> variable_declarations;
+%type <varDecl> variable_declaration;
+%type <vars> variables;
+%type <var> variable;
+%type <stmts> statements;
+%type <stmt> statement;
+%type <assignExpr> assign_statement;
+%type <ifStmt> if_statement;
+%type <forStmt> for_statement;
+%type <returnStmt> return_statement;
+%type <breakStmt> break_statement;
+%type <continueStmt> continue_statement;
+%type <location> location;
+%type <forAssign> for_assign;
+%type <expr> expr;
+%type <methodCall> method_call;
+%type <exprList> expressions;
+%type <calloutArgList> callout_args;
+%type <calloutArg> callout_arg;
+%type <literal> literal;
+%type <binExpr> bin_expr;
+%type <unaryExpr> unary_expr;
+%type <enclExpr> encl_expr;
+%type <lit> assign_op bin_op rel_op arith_op eq_op cond_op;
+%%
+
+program: CLASS ID OB field_declarations method_declarations CB {$$ = new Prog($4,$5); start = $$;}
+		;
+
+field_declaration: TYPE fields {$$ = new Decl($1, $2);}
+
+field_declarations: %empty {$$ = new DeclList();}
+					| field_declarations field_declaration SC {$$->push_back($2);}
+					;
+
+variables: variable {$$ = new Variables(); $$->push_back($1);}
+							| variables COMMA variable {$$->push_back($3);}
+							;
+
+variable: ID {$$ = new Variable($1);}
+
+fields: field {$$ = new Fields(); $$->push_back($1);}
+		| fields COMMA field {$$->push_back($3);}
+		;
+
+field: ID {$$ = new Field("normal", $1);}
+		| ID OSB INT_LIT CSB {$$ = new Field("arr", $1, $3);}
+		;
+
+method_declarations: %empty {$$ = new MethodList();}
+					| method_declarations method_declaration {$$->push_back($2);}
+					;
+
+method_declaration: TYPE ID OP parameters CP block {$$ = new Method($2, $1, $4, $6);}
+					| VOID ID OP parameters CP block {$$ = new Method($2, "void", $4, $6);}
+					;
+
+parameters: parameter {$$ = new Params(); $$->push_back($1);}
+			| parameters COMMA parameter {$$->push_back($3);}
+			;
+
+parameter: TYPE ID {$$ = new Param($1, $2);}
+		;
+
+block: OB variable_declarations statements CB {$$ = new Block($2, $3);}
+		;
+
+variable_declarations: %empty {$$ = new VarList();}
+						| variable_declarations variable_declaration SC {$$->push_back($2);}
+						;
+
+variable_declaration: TYPE variables {$$ = new VarDecl($1, $2);}
+
+statements: %empty {$$=new StatementList();}
+			| statements statement {$$->push_back($2);}
+			;
+
+statement: assign_statement SC {$$ = $1;}
+		| method_call SC {$$ = $1;}
+		| if_statement {$$ = $1;} 
+		| for_statement {$$ = $1;}
+		| return_statement {$$ = $1;}
+		| break_statement {$$ = $1;}
+		| continue_statement {$$ = $1;}
+		| block {$$ = $1;}
+		;
+
+assign_statement: location assign_op expr {$$ = new AssignExpr($1, $2, $3);}
+				;
+
+if_statement: IF OP expr CP block {$$ = new IfStmt("normal", $3, $5);}
+		| IF OP expr CP block ELSE block {$$ = new IfStmt("else", $3, $5, $7);}
+		;
+
+for_statement: FOR for_assign COMMA expr block {$$ = new ForStmt($2, $4, $5);}
+			;
+
+return_statement: RETURN expr SC {$$ = new ReturnStmt("expr", $2);}
+				| RETURN SC {$$ = new ReturnStmt("normal");}
+				;
+
+break_statement: BREAK SC {$$ = new BreakStmt();}
+				;
+
+continue_statement: CONTINUE SC {$$ = new ContinueStmt();}
+					;
+
+location: ID {$$ = new Location("normal", $1);}
+		| ID OSB expr CSB {new Location("arr", $1, $3);}
+		;
+
+for_assign: ID EQ expr {$$ = new ForAssign(new Variable($1), $3);}
+			;
+
+assign_op: EQ {$$=$1;}
+		| ADDEQ {$$=$1;}
+		| SUBEQ {$$=$1;}
+		;
+
+expr: location {$$ = new Expr("loc", $1);}
+	| method_call {$$ = new Expr("mc", $1);}
+	| literal {$$ = new Expr("lit", $1);}
+	| bin_expr {$$ = new Expr("bin", $1);}
+	| unary_expr {$$ = new Expr("unary", $1);}
+	| encl_expr {$$ = new Expr("encl", $1);}
+	;
+
+method_call: ID OP expressions CP {$$ = new MethodCall("normal", $1, $3);}
+			| CALLOUT OP STRING CP {$$ = new MethodCall("callout", $3);}
+			| CALLOUT OP STRING COMMA callout_args CP {$$ = new MethodCall("callout", $3, $5);}
+			;
+
+expressions: expr {$$ = new ExprList(); $$->push_back($1);}
+			| expressions COMMA expr {$$->push_back($3);}
+			;
+
+callout_args: callout_arg {$$ = new CalloutArgList(); $$->push_back($1);}
+			| callout_args COMMA callout_arg {$$->push_back($3);}
+			;
+
+callout_arg: expr {$$=new CalloutArg("expr", $1);}
+			| STRING {$$=new CalloutArg("string", $1);}
+			; 
+
+bin_expr: expr bin_op expr {$$ = new BinExpr($1, $2, $3);}
+		;
+
+unary_expr: SUB expr {$$ = new UnaryExpr("-", $2);}
+			| NOT expr {$$ = new UnaryExpr("!", $2);}
+			;
+
+encl_expr: OP expr CP {$$ = new EnclExpr($2);}
+			;
+
+arith_op: ADD {$$=$1;}
+		| SUB {$$=$1;}
+		| MUL {$$=$1;}
+		| DIV {$$=$1;}
+		| MOD {$$=$1;}
+		;
+
+rel_op: LT {$$=$1;}
+		| GT {$$=$1;}
+		| LE {$$=$1;}
+		| GE {$$=$1;}
+		;
+
+literal: INT_LIT {$$=new Literal("int", $1);}
+		| CHAR {$$=new Literal("char", $1);}
+		| BOOLEAN {$$=new Literal("bool", $1);}
+		;
+
+bin_op: arith_op {$$=$1;}
+		| rel_op {$$=$1;}
+		| eq_op {$$=$1;}
+		| cond_op {$$=$1;}
+		;
+
+cond_op: COND_AND {$$=$1;}
+		| COND_OR {$$=$1;}
+		;
+
+eq_op: EQUAL {$$=$1;}
+	| NOT_EQUAL {$$=$1;}
+	;
+
+%%
+
+int main(int argc, char **argv)
+{
+	if(argc == 1) {
+		printf("Please provide an input file\n");
+		exit(-1);
+	}
+
+	FILE *input = fopen(argv[1], "r");
+
+	if (input == NULL){
+		printf("Unable to open the given file\n");
+		exit(-1);
+	}
+	yyin = input;
+	do {
+		yyparse();
+	} while (!feof(yyin));
+	printf("PARSED\n");
+
+	Interpreter *it = new Interpreter();
+    printf("Running semantic analyser........ \n");
+    start->accept(it);
+    printf("Semantic Analysis DONE\n");
+}
+
+void yyerror(const char *s){
+	errors++;
+	printf("Error %s found at %d\n",s,line_no);
+  exit(-1);
+}

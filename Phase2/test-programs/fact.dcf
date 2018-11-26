@@ -1,0 +1,27 @@
+class Program
+{
+	int num;
+	void initialize ()
+	{
+		num = callout ("read");
+	}
+	int factorial (int n)
+	{
+		int res, i, temp;
+		res = 1;
+		temp = n + 1;
+		for i = 2, temp
+		{
+			res = res * i;
+		}
+		return res;
+	}
+	int main ()
+	{
+		initialize ();
+		int result;
+		result = factorial (num);
+		callout ("printf", "%d", result);
+		return 0;
+	}
+}
