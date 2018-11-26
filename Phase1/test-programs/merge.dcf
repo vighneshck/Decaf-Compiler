@@ -1,0 +1,118 @@
+class Program {
+	
+	int arr [10000];
+	int n;
+	
+	void initialize ()
+	{
+		n = callout ("read");
+		for i = 0, n
+		{
+			arr[i] = callout ("read");
+		}
+	}
+
+	void printArr () 
+	{
+		int i;
+		for i = 0, n
+		{
+			callout ("printf", "%d ", arr[i]);
+		}
+	}
+
+	void merge (int l, int m, int r)
+	{
+		int i, j, k, n1, n2;
+		int L [10000], R [10000];
+
+		n1 = m - l + 1;
+		n2 = r - m;
+
+
+		for id = 0, n1
+		{
+			L[i] = arr[l + i];
+		}
+		
+		for id = 0, n2
+		{
+			R[j] = arr[m + 1 + j];
+		}
+
+		i = 0;
+		j = 0;
+		k = l;
+
+		for tmp = 1, 0
+		{
+			if(i >= n1)
+			{
+				break;
+			}
+			if(j >= n2)
+			{
+				break;
+			}
+        	if (L[i] <= R[j]) 
+        	{ 
+            	arr[k] = L[i]; 
+            	i += 1; 
+        	} 
+        	else
+        	{ 
+            	arr[k] = R[j]; 
+            	j += 1; 
+        	} 
+        
+        	k += 1;
+
+		}
+
+		for tmp = 1, 0
+		{
+			if(i >= n1)
+			{
+				break;
+			}
+			arr[k] = L[i]; 
+        	i += 1; 
+        	k += 1; 
+		}
+
+		for tmp = 1, 0
+		{
+			if(j >= n2)
+			{
+				break;
+			}
+			arr[k] = R[j]; 
+        	j += 1; 
+        	k += 1; 
+		}
+
+
+	}
+
+	void mergeSort (int l, int r)
+	{
+		if(l < r)
+		{
+			int m;
+			m = l + ((r - l) / 2);
+			mergeSort(l, m);
+			mergeSort(m + 1, r);
+			merge(l, m, r)
+		}
+	}
+
+	int main()
+	{
+		initialize ();
+		int temp; 
+		temp = n - 1;
+		mergeSort (0, temp);
+		printArr ();
+		return 0;
+	}
+}

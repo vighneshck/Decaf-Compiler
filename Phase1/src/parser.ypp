@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 	FILE *input = fopen(argv[1], "r");
 
 	if (input == NULL){
-		printf("Unable to open the given file!\n");
+		printf("Unable to open the given file\n");
 		exit(-1);
 	}
 	yyin = input;
