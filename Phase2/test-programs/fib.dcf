@@ -2,7 +2,7 @@
  {
  	int num, result;
 
- 	void fib ()
+ 	void fib (int a)
  	{
  		int f, e, fin;
  		f=0;
@@ -19,11 +19,11 @@
  		result = fin;
  	}
 
- 	int main()
+ 	int main(int a)
  	{
  		
  		num=10;
- 		fib ();
+ 		fib (2);
  		callout ("printf", "%d", result);
  		return 0;
  	}
