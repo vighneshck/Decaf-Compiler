@@ -162,7 +162,6 @@ public:
 class BaseAst{
 public:
 	virtual int accept(Visitor* v){}
-	// virtual Value* codegen() {}
 };
 
 class DeclList: public BaseAst{
@@ -197,7 +196,6 @@ public:
 
 };
 
- /* Id or Id[int] */
 class Field: public BaseAst{
 public:
 	string type;
@@ -225,7 +223,6 @@ class Prog: public BaseAst{
 public:
 	class DeclList* decls;
 	class MethodList* methods;
-    // Constructs *compilerConstructs;
 
 	Prog(class DeclList*,class MethodList*);
 	int accept(Visitor* v){ return v->visit(this); }
@@ -243,7 +240,6 @@ public:
 
 };
 
-/* Id */
 class Variable: public BaseAst{
 public:
 	string name;
