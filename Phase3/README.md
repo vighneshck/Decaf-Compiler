@@ -1,4 +1,4 @@
-# Decaf Compiler (Phase 2)
+# Decaf Compiler (Phase 3)
 
 ## Structure
 - src
@@ -17,14 +17,14 @@
 
 
 ## Run
-$ cd src
-$ make
-$ ./compiler $inp_program_file
+    $ cd src
+    $ make
+    $ ./compiler $inp_program_file
 
-Eg.
-cd src 
-make
-./compiler ../test-programs/fib.dcf 
+### Demo
+    $ cd src 
+    $ make
+    $ ./compiler ../test-programs/fib.dcf 
 
 ## Description
 - src
@@ -32,7 +32,7 @@ make
 	- parser.ypp : has the Grammar and the corresponding actions to be taken 
 	- Makefile : build file for the compiler
 	- programdef.h : Contains all the class declarations for the non-terminal tokens declared in the parser.
-	- programdefs.cpp : Contains the constructors as well as the functions of all the classes. Also, contains the Visitor Pattern Code for Semantic checking, as well as for code generation. 
+	- programdefs.cpp : Contains the constructors as well as the functions of all the classes, AND the Visitor Pattern Code for Semantic checking, as well as the code generation. 
 
 - test-programs
 	- binary.dcf : Decaf program to perform binary search
