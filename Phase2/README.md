@@ -17,14 +17,14 @@
 
 
 ## Run
-$ cd src
-$ make
-$ ./compiler $inp_program_file
+    $ cd src
+    $ make
+    $ ./compiler $inp_program_file
 
-Eg.
-cd src 
-make
-./compiler ../test-programs/fib.dcf 
+### Demo
+    $ cd src 
+    $ make
+    $ ./compiler ../test-programs/fib.dcf 
 
 ## Description
 - src
@@ -32,7 +32,7 @@ make
 	- parser.ypp : has the Grammar and the corresponding actions to be taken 
 	- Makefile : build file for the compiler
 	- programdef.h : Contains all the class declarations for the non-terminal tokens declared in the parser.
-	- programdefs.cpp : Contains the constructors as well as the functions of all the classes. Also, contains the Visitor Pattern Code for Semantic checking. 
+	- programdefs.cpp : Contains the constructors as well as the functions of all the classes, AND the Visitor Pattern Code for Semantic checking. 
 
 - test-programs
 	- binary.dcf : Decaf program to perform binary search
@@ -42,5 +42,5 @@ make
 	- merge.dcf : Decaf program to perform merge sort
 
 ## Future Work
--The Phase2 does a semantic analysis, and returns if it has passed the test. 
--Phase3 remains to be done, as the bugs haven't been fixable yet. 
+    -The Phase2 does a semantic analysis, and returns if it has passed the test. 
+    -Phase3 remains to be done, as the bugs haven't been fixable yet. 
