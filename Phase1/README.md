@@ -15,14 +15,14 @@
 
 
 ## Run
-$ cd src
-$ make
-$ ./parser $inp_program_file
+    $ cd src
+    $ make
+    $ ./parser $inp_program_file
 
 Eg.
-cd src 
-make
-./parser ../test-programs/fib.dcf
+    cd src 
+    make
+    ./parser ../test-programs/fib.dcf
 
 ## Description
 - src
@@ -38,5 +38,5 @@ make
 	- merge.dcf : Decaf program to perform merge sort
 
 ## Future Work
--The Phase1 checks if the input code is parsable or not. 
--Phase2 and Phase3 remain to be done, as the bugs haven't been fixable yet. 
+    -The Phase1 checks if the input code is parsable or not. 
+    -Phase2 and Phase3 remain to be done, as the bugs haven't been fixable yet. 
