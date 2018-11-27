@@ -19,7 +19,7 @@
     $ make
     $ ./parser $inp_program_file
 
-# Demo:
+### Demo
     $ cd src 
     $ make
     $ ./parser ../test-programs/fib.dcf
