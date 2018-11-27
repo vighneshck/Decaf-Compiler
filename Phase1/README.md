@@ -19,10 +19,10 @@
     $ make
     $ ./parser $inp_program_file
 
-Eg.
-    cd src 
-    make
-    ./parser ../test-programs/fib.dcf
+# Demo:
+    $ cd src 
+    $ make
+    $ ./parser ../test-programs/fib.dcf
 
 ## Description
 - src
